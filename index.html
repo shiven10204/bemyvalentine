@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valentine Maker Pro 🎀</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Valentine Studio 🎀</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Fredoka:wght@300;500;700&display=swap" rel="stylesheet">
@@ -25,26 +25,31 @@
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            transition: background 0.5s ease; 
+            transition: background 0.5s ease;
+            touch-action: manipulation;
         }
         
         .cute-card { 
             background: var(--card-bg); 
             border: 8px solid var(--border); 
-            border-radius: 50px; 
-            box-shadow: 0 20px 0 var(--shadow); 
+            border-radius: 40px; 
+            box-shadow: 0 15px 0 var(--shadow); 
             transition: all 0.5s ease; 
         }
 
-        .page { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; width: 100%; padding: 30px; }
+        .page { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; width: 100%; padding: 20px; }
         .active { display: flex; animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
         
         @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         
-        #no-button { transition: all 0.2s ease; z-index: 100; position: absolute; }
+        /* Fixed No Button Logic */
+        #no-button { 
+            transition: all 0.2s ease; 
+            z-index: 100;
+        }
         
         select, input, textarea { 
-            background: rgba(255, 255, 255, 0.5) !important; 
+            background: rgba(255, 255, 255, 0.6) !important; 
             border: 3px solid var(--border) !important; 
             border-radius: 15px !important; 
             padding: 10px !important; 
@@ -52,12 +57,10 @@
             font-weight: bold; 
             width: 100%; 
             outline: none; 
-            margin-bottom: 10px;
-            transition: border 0.3s ease;
+            margin-bottom: 8px;
+            font-size: 16px; /* Prevents iOS zoom on input */
         }
 
-        ::placeholder { color: var(--secondary); opacity: 0.7; }
-        
         .bubble { position: absolute; background: white; border-radius: 50%; opacity: 0.6; pointer-events: none; animation: floatUp 10s infinite ease-in; z-index: 1; }
         @keyframes floatUp { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
     </style>
@@ -66,74 +69,69 @@
 
     <div id="bubbles-container"></div>
 
-    <div id="main-card" class="cute-card w-[95%] max-w-lg h-[680px] relative overflow-hidden flex flex-col items-center justify-center">
+    <div id="main-card" class="cute-card w-[92%] max-w-lg h-[600px] relative overflow-hidden flex flex-col items-center justify-center">
         
         <div id="page0" class="page">
-            <h1 class="text-2xl font-bold mb-4 text-[var(--primary)]">Valentine Studio 🍭</h1>
-            <div class="w-full space-y-1 max-w-xs text-left overflow-y-auto pr-2" style="max-height: 450px;">
-                <label class="text-[10px] uppercase font-bold text-[var(--secondary)] ml-2">Personal Details</label>
+            <h1 class="text-xl font-bold mb-3 text-[var(--primary)]">Valentine Studio 🍭</h1>
+            <div class="w-full space-y-1 max-w-xs text-left overflow-y-auto pr-2" style="max-height: 380px;">
                 <input type="text" id="my-name" placeholder="Your Name">
                 <input type="text" id="crush-name" placeholder="Her Name">
-                
-                <label class="text-[10px] uppercase font-bold text-[var(--secondary)] ml-2">Custom Note (Optional)</label>
-                <textarea id="custom-msg" rows="2" placeholder="Write something sweet..."></textarea>
-                
-                <label class="text-[10px] uppercase font-bold text-[var(--secondary)] ml-2">Design Theme</label>
+                <textarea id="custom-msg" rows="2" placeholder="Write a cute note..."></textarea>
                 <select id="theme-choice" onchange="applyTheme(this.value)">
-                    <option value="cute">Cute & Bubbly (Pink)</option>
-                    <option value="dark">Elegant Night (Dark)</option>
-                    <option value="sky">Dreamy Clouds (Blue)</option>
+                    <option value="cute">Pink Theme 🌸</option>
+                    <option value="dark">Dark Theme 🌙</option>
+                    <option value="sky">Blue Theme ☁️</option>
                 </select>
-
-                <label class="text-[10px] uppercase font-bold text-[var(--secondary)] ml-2">Music Choice</label>
-                <select id="music-preset">
+                <select id="music-preset" onchange="previewMusic(this.value)">
                     <option value="none">No Music</option>
-                    <option value="romantic">Romantic Piano 🎹</option>
-                    <option value="chill">Chill Lofi ☕</option>
-                    <option value="cute">Cute Kawaii ✨</option>
+                    <option value="romantic">Love Story (Piano) 🎹</option>
+                    <option value="cute">Sweet Sunshine (Uke) 🧸</option>
+                    <option value="chill">Midnight Snuggle (Lofi) ☕</option>
                 </select>
-
-                <label class="text-[10px] uppercase font-bold text-[var(--secondary)] ml-2">Photo URL</label>
-                <input type="text" id="img-url" placeholder="Paste link or leave empty">
+                <input type="text" id="img-url" placeholder="Photo Link (Optional)">
             </div>
-            <button onclick="playSfx('pop'); generateLink()" class="mt-6 bg-[var(--primary)] text-white w-full max-w-xs py-4 rounded-3xl font-bold shadow-lg active:scale-95 transition-all">Generate & Copy Link 🔗</button>
-            <p id="link-status" class="mt-2 text-xs text-green-500 font-bold opacity-0 transition-opacity">Link ready to share! ✅</p>
+            <button onclick="playSfx('pop'); generateLink()" class="mt-4 bg-[var(--primary)] text-white w-full max-w-xs py-3 rounded-2xl font-bold shadow-lg">Copy Magic Link 🔗</button>
+            <p id="link-status" class="mt-2 text-xs text-green-500 font-bold opacity-0 transition-opacity">Copied! ✅</p>
         </div>
 
         <div id="page1" class="page">
-            <div class="text-7xl mb-6">🎁</div>
-            <h1 class="text-3xl font-bold mb-4 text-[var(--primary)]">Hii <span class="val-her"></span>!</h1>
-            <p class="text-[var(--secondary)] mb-10 text-lg font-medium italic">A tiny surprise from <span class="val-me"></span>...</p>
-            <button onclick="playSfx('pop'); startExperience()" class="px-12 py-4 bg-[var(--border)] text-[var(--primary)] rounded-full font-bold shadow-md">Open ✨</button>
+            <div class="text-6xl mb-4 animate-bounce">🎁</div>
+            <h1 class="text-2xl font-bold mb-2 text-[var(--primary)]">Hii <span class="val-her"></span>!</h1>
+            <p class="text-[var(--secondary)] mb-8 text-lg italic">A surprise from <span class="val-me"></span>...</p>
+            <button onclick="playSfx('pop'); startExperience()" class="px-10 py-4 bg-[var(--border)] text-[var(--primary)] rounded-full font-bold shadow-md">Open ✨</button>
         </div>
 
         <div id="page2" class="page">
-            <div id="img-display" class="w-60 h-60 rounded-[40px] border-8 border-[var(--border)] overflow-hidden mb-8 shadow-inner flex items-center justify-center"></div>
-            <h2 class="text-2xl font-bold text-[var(--primary)] mb-4 italic">"Always in my mind..."</h2>
-            <button onclick="playSfx('pop'); showPage('page3')" class="mt-4 text-[var(--primary)] font-bold border-b-2 border-[var(--primary)]">Next ☁️</button>
+            <div id="img-display" class="w-52 h-52 rounded-[30px] border-4 border-[var(--border)] overflow-hidden mb-6 shadow-inner flex items-center justify-center"></div>
+            <h2 class="text-xl font-bold text-[var(--primary)] mb-4 italic">"Thinking of you..."</h2>
+            <button onclick="playSfx('pop'); showPage('page3')" class="text-[var(--primary)] font-bold border-b-2 border-[var(--primary)]">Next ☁️</button>
         </div>
 
         <div id="page3" class="page">
-            <div class="text-6xl mb-6">💌</div>
-            <h1 class="text-2xl font-bold text-[var(--primary)] mb-6">A Message for You</h1>
-            <p id="display-msg" class="text-[var(--secondary)] leading-relaxed mb-8 px-6 text-lg italic">
-                (Your custom message will appear here!)
-            </p>
-            <button onclick="playSfx('pop'); showPage('page4')" class="bg-[var(--border)] text-[var(--primary)] px-10 py-3 rounded-full font-bold">Read on 🍭</button>
+            <div class="text-5xl mb-4">💌</div>
+            <p id="display-msg" class="text-[var(--secondary)] leading-relaxed mb-8 px-4 text-lg italic">...</p>
+            <button onclick="playSfx('pop'); showPage('page4')" class="bg-[var(--border)] text-[var(--primary)] px-8 py-3 rounded-full font-bold">One more thing... 🍭</button>
         </div>
 
         <div id="page4" class="page">
-            <h1 id="question" class="text-3xl font-bold mb-16 text-[var(--primary)] px-4 leading-tight">Will you be my Valentine? 🧸</h1>
-            <div id="button-area" class="relative w-full h-40 flex items-center justify-center">
-                <button id="yes-button" onclick="playSfx('tada'); celebrate()" class="bg-[var(--primary)] text-white px-14 py-6 rounded-full text-3xl font-black shadow-xl">YES! 💖</button>
-                <button id="no-button" onmouseover="playSfx('whoosh'); teleport()" class="bg-white text-[var(--secondary)] px-6 py-2 rounded-full text-sm border-2 border-[var(--border)] font-bold">No 🥺</button>
+            <h1 id="question" class="text-2xl font-bold mb-12 text-[var(--primary)] px-2 leading-tight">Will you be my Valentine? 🧸</h1>
+            
+            <div id="button-area" class="relative w-full h-48 flex flex-col items-center justify-start gap-4">
+                <button id="yes-button" onclick="playSfx('tada'); celebrate()" class="bg-[var(--primary)] text-white px-12 py-5 rounded-full text-2xl font-black shadow-xl order-1">YES! 💖</button>
+                <button id="no-button" 
+                        onmouseover="teleport()" 
+                        onclick="teleport()" 
+                        ontouchstart="teleport()"
+                        class="bg-white text-[var(--secondary)] px-6 py-2 rounded-full text-sm border-2 border-[var(--border)] font-bold order-2 sm:relative">
+                    No 🥺
+                </button>
             </div>
         </div>
 
         <div id="page5" class="page">
-            <div class="text-8xl mb-6">🍓</div>
-            <h1 class="text-5xl font-black mb-2 text-[var(--primary)]">YAYY!!</h1>
-            <p class="text-xl text-[var(--secondary)] font-bold italic">Check your messages! 😉</p>
+            <div class="text-7xl mb-4">🍓</div>
+            <h1 class="text-4xl font-black mb-2 text-[var(--primary)]">YAYY!!</h1>
+            <p class="text-lg text-[var(--secondary)] font-bold italic">It's a date! ✨</p>
         </div>
     </div>
 
@@ -142,8 +140,14 @@
     <script>
         const themes = {
             cute: { bg: "#fff5f7", cardBg: "rgba(255, 255, 255, 0.95)", border: "#ffd1dc", shadow: "#ffb7c5", primary: "#ff4d6d", secondary: "#ff85a1" },
-            dark: { bg: "#0f172a", cardBg: "rgba(30, 41, 59, 0.9)", border: "#334155", shadow: "#000000", primary: "#fbbf24", secondary: "#94a3b8" },
+            dark: { bg: "#0f172a", cardBg: "rgba(30, 41, 59, 0.95)", border: "#334155", shadow: "#000000", primary: "#fbbf24", secondary: "#94a3b8" },
             sky: { bg: "#f0f9ff", cardBg: "rgba(255, 255, 255, 0.95)", border: "#bae6fd", shadow: "#7dd3fc", primary: "#0284c7", secondary: "#0ea5e9" }
+        };
+
+        const musicLibrary = {
+            romantic: "https://www.chosic.com/wp-content/uploads/2021/04/Beautiful-Piano-Music.mp3",
+            cute: "https://www.chosic.com/wp-content/uploads/2022/03/Sweet-Acoustic-Guitar.mp3",
+            chill: "https://www.chosic.com/wp-content/uploads/2021/07/Lofi-Study.mp3"
         };
 
         const sfx = {
@@ -167,6 +171,14 @@
             new Audio(sfx[type]).play().catch(() => {});
         }
 
+        function previewMusic(type) {
+            const player = document.getElementById('music-player');
+            if (type === "none") { player.pause(); return; }
+            player.src = musicLibrary[type];
+            player.volume = 0.5;
+            player.play().catch(() => {});
+        }
+
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -175,24 +187,19 @@
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             if (params.has('to')) {
-                // Apply theme from URL
                 applyTheme(params.get('theme'));
-                
-                // Set names
                 document.querySelectorAll('.val-her').forEach(e => e.innerText = params.get('to'));
                 document.querySelectorAll('.val-me').forEach(e => e.innerText = params.get('from'));
                 
-                // Set Custom Message
                 const msg = params.get('msg');
-                document.getElementById('display-msg').innerText = (msg && msg !== "null") ? decodeURIComponent(msg) : "You make my world a whole lot brighter just by being in it! ✨";
+                document.getElementById('display-msg').innerText = (msg && msg !== "null") ? decodeURIComponent(msg) : "You make my world brighter! ✨";
 
-                // Set Photo
                 const imgUrl = params.get('img');
                 const display = document.getElementById('img-display');
                 if (imgUrl && imgUrl.trim() !== "" && imgUrl !== "null") {
                     display.innerHTML = `<img src="${decodeURIComponent(imgUrl)}" class="w-full h-full object-cover">`;
                 } else {
-                    display.innerHTML = `<div class="w-full h-full bg-[var(--bg)] flex items-center justify-center text-8xl">❤️</div>`;
+                    display.innerHTML = `<div class="w-full h-full bg-[var(--bg)] flex items-center justify-center text-6xl">❤️</div>`;
                 }
                 showPage('page1');
             } else {
@@ -222,17 +229,26 @@
             const musicType = params.get('music');
             if (musicType && musicType !== "none") {
                 const player = document.getElementById('music-player');
-                player.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; // Reference Link
+                player.src = musicLibrary[musicType] || decodeURIComponent(musicType);
                 player.play().catch(() => {});
             }
         }
 
         let scale = 1;
         function teleport() {
+            playSfx('whoosh');
             const btn = document.getElementById('no-button');
             const area = document.getElementById('button-area');
-            btn.style.left = Math.random() * (area.clientWidth - btn.clientWidth) + 'px';
-            btn.style.top = Math.random() * (area.clientHeight - btn.clientHeight) + 'px';
+            
+            // Switch to absolute positioning only on first interaction
+            btn.style.position = 'absolute';
+
+            const maxX = area.clientWidth - btn.clientWidth;
+            const maxY = area.clientHeight - btn.clientHeight;
+
+            btn.style.left = Math.floor(Math.random() * maxX) + 'px';
+            btn.style.top = Math.floor(Math.random() * maxY) + 'px';
+            
             scale += 0.45;
             document.getElementById('yes-button').style.transform = `scale(${scale})`;
             if(scale > 4) btn.style.display = 'none';
@@ -243,10 +259,9 @@
             showPage('page5');
         }
 
-        // Bubbles Background
-        for(let i=0; i<12; i++) {
+        for(let i=0; i<10; i++) {
             let b = document.createElement('div'); b.className = 'bubble';
-            b.style.width = Math.random() * 50 + 20 + 'px'; b.style.height = b.style.width;
+            b.style.width = Math.random() * 40 + 20 + 'px'; b.style.height = b.style.width;
             b.style.left = Math.random() * 100 + 'vw'; b.style.animationDelay = Math.random() * 5 + 's';
             document.getElementById('bubbles-container').appendChild(b);
         }
