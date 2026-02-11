@@ -18,8 +18,8 @@
         #no-button { transition: all 0.2s ease; z-index: 100; position: absolute; }
         #yes-button { transition: all 0.3s ease; z-index: 50; }
         
-        .helper-btn { font-size: 10px; background: #ffebf0; color: #ff4d6d; padding: 4px 10px; border-radius: 10px; font-weight: bold; margin-top: 5px; display: inline-block; }
-        input { background: #fff0f3 !important; border: 3px solid #ffd1dc !important; border-radius: 15px !important; padding: 10px !important; color: #ff4d6d !important; font-weight: bold; width: 100%; outline: none; font-size: 14px; }
+        select, input { background: #fff0f3 !important; border: 3px solid #ffd1dc !important; border-radius: 15px !important; padding: 10px !important; color: #ff4d6d !important; font-weight: bold; width: 100%; outline: none; font-size: 14px; margin-bottom: 10px; }
+        .helper-btn { font-size: 10px; background: #ffebf0; color: #ff4d6d; padding: 4px 10px; border-radius: 10px; font-weight: bold; display: inline-block; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -30,42 +30,44 @@
         
         <div id="page0" class="page">
             <h1 class="text-2xl font-bold mb-4 text-[#ff4d6d]">Valentine Site Maker 🍭</h1>
-            <p class="text-[11px] text-[#ff85a1] mb-6 px-4">Fill this out, then send the "Share Link" to your crush!</p>
             
-            <div class="w-full space-y-4 max-w-xs text-left">
-                <div>
-                    <input type="text" id="my-name" placeholder="Your Name (e.g. Alex)">
-                </div>
-                <div>
-                    <input type="text" id="crush-name" placeholder="Crush Name (e.g. Maya)">
-                </div>
+            <div class="w-full space-y-2 max-w-xs text-left">
+                <input type="text" id="my-name" placeholder="Your Name">
+                <input type="text" id="crush-name" placeholder="Crush Name">
                 
-                <div>
-                    <input type="text" id="img-url" placeholder="Paste Photo Link here...">
-                    <a href="https://postimages.org/" target="_blank" class="helper-btn">Step 1: Click to Upload Photo & Get Link 📸</a>
-                </div>
+                <label class="text-[10px] text-[#ff85a1] uppercase font-bold ml-2">Choose a Vibe (Music)</label>
+                <select id="music-preset">
+                    <option value="none">No Music</option>
+                    <option value="romantic">Romantic Piano (Classic)</option>
+                    <option value="chill">Chill Lofi (Modern)</option>
+                    <option value="cute">Cute Kawaii (Upbeat)</option>
+                    <option value="custom">-- Paste My Own Link --</option>
+                </select>
                 
-                <div>
-                    <input type="text" id="music-url" placeholder="Paste Music (.mp3) Link here...">
-                    <a href="https://catbox.moe/" target="_blank" class="helper-btn">Step 2: Click to Upload Song & Get Link 🎵</a>
+                <div id="custom-music-box" class="hidden">
+                    <input type="text" id="music-url" placeholder="Paste .mp3 link here...">
                 </div>
+
+                <label class="text-[10px] text-[#ff85a1] uppercase font-bold ml-2">Photo Link</label>
+                <input type="text" id="img-url" placeholder="Paste Photo Link here...">
+                <a href="https://postimages.org/" target="_blank" class="helper-btn">Upload Photo & Get Link 📸</a>
             </div>
 
-            <button onclick="generateLink()" class="mt-8 bg-[#ff4d6d] text-white w-full max-w-xs py-4 rounded-3xl font-bold shadow-lg active:scale-95 transition-all">Copy My Valentine Link 🔗</button>
-            <p id="link-status" class="mt-3 text-xs text-green-500 font-bold opacity-0 transition-opacity">Link Copied! Send it to them! ✅</p>
+            <button onclick="generateLink()" class="mt-4 bg-[#ff4d6d] text-white w-full max-w-xs py-4 rounded-3xl font-bold shadow-lg active:scale-95 transition-all">Copy Shareable Link 🔗</button>
+            <p id="link-status" class="mt-2 text-xs text-green-500 font-bold opacity-0 transition-opacity">Link Copied! ✅</p>
         </div>
 
         <div id="page1" class="page">
             <div class="text-6xl mb-6 animate-bounce">💌</div>
             <h1 class="text-3xl font-bold mb-4 text-[#ff4d6d]">Hii <span class="val-her"></span>!</h1>
-            <p class="text-[#ff85a1] mb-10 text-lg font-medium">You have a special surprise from <span class="val-me"></span>... 🙊</p>
-            <button onclick="startExperience()" class="px-12 py-4 bg-[#ffd1dc] text-[#ff4d6d] rounded-full font-bold shadow-md active:scale-95">Open Message 🍬</button>
+            <p class="text-[#ff85a1] mb-10 text-lg font-medium">You have a surprise from <span class="val-me"></span>...</p>
+            <button onclick="startExperience()" class="px-12 py-4 bg-[#ffd1dc] text-[#ff4d6d] rounded-full font-bold shadow-md">Open Message 🍬</button>
         </div>
 
         <div id="page2" class="page">
             <div id="img-display" class="w-60 h-60 rounded-[40px] border-8 border-[#ffd1dc] overflow-hidden mb-8 shadow-inner"></div>
-            <h2 class="text-3xl font-bold text-[#ff4d6d] mb-4">Thinking of you...</h2>
-            <button onclick="nextPage('page3')" class="mt-6 bg-[#ff4d6d] text-white px-8 py-3 rounded-full font-bold shadow-lg">Next ☁️</button>
+            <h2 class="text-3xl font-bold text-[#ff4d6d] mb-4 italic">Thinking of you...</h2>
+            <button onclick="nextPage('page3')" class="mt-6 bg-[#ff4d6d] text-white px-8 py-3 rounded-full font-bold">Next ☁️</button>
         </div>
 
         <div id="page3" class="page">
@@ -87,11 +89,22 @@
     <audio id="music-player" loop></audio>
 
     <script>
-        // Check if this is a Shared Link or the Generator
+        // Preset Music Library (Using direct public CDN links)
+        const musicLibrary = {
+            romantic: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", // Replace with more romantic direct links
+            chill: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+            cute: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+        };
+
+        // Show/Hide custom music input
+        document.getElementById('music-preset').addEventListener('change', function() {
+            const customBox = document.getElementById('custom-music-box');
+            customBox.style.display = (this.value === 'custom') ? 'block' : 'none';
+        });
+
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             if (params.has('to')) {
-                // IT'S A VALENTINE! Show the experience immediately
                 document.querySelectorAll('.val-me').forEach(e => e.innerText = params.get('from'));
                 document.querySelectorAll('.val-her').forEach(e => e.innerText = params.get('to'));
                 if(params.get('img')) {
@@ -99,7 +112,6 @@
                 }
                 showPage('page1');
             } else {
-                // IT'S A MAKER! Show the form
                 showPage('page0');
             }
         };
@@ -108,7 +120,11 @@
             const me = encodeURIComponent(document.getElementById('my-name').value || "Me");
             const her = encodeURIComponent(document.getElementById('crush-name').value || "You");
             const img = encodeURIComponent(document.getElementById('img-url').value);
-            const music = encodeURIComponent(document.getElementById('music-url').value);
+            
+            let music = document.getElementById('music-preset').value;
+            if (music === 'custom') {
+                music = encodeURIComponent(document.getElementById('music-url').value);
+            }
             
             const baseUrl = window.location.origin + window.location.pathname;
             const finalLink = `${baseUrl}?from=${me}&to=${her}&img=${img}&music=${music}`;
@@ -121,11 +137,13 @@
 
         function startExperience() {
             const params = new URLSearchParams(window.location.search);
-            const musicUrl = params.get('music');
-            if(musicUrl && musicUrl.trim() !== "") {
-                const player = document.getElementById('music-player');
-                player.src = musicUrl;
-                player.play().catch(e => console.log("Audio play blocked"));
+            const musicType = params.get('music');
+            const player = document.getElementById('music-player');
+
+            if (musicType && musicType !== "none") {
+                // If it's a preset, use the library. Otherwise, use the custom link.
+                player.src = musicLibrary[musicType] || decodeURIComponent(musicType);
+                player.play().catch(e => console.log("Autoplay prevented. User interaction required."));
             }
             showPage('page2');
         }
@@ -135,9 +153,6 @@
             document.getElementById(id).classList.add('active');
         }
 
-        function nextPage(id) { showPage(id); }
-
-        let scaleFactor = 1;
         function teleport() {
             const noBtn = document.getElementById('no-button');
             const yesBtn = document.getElementById('yes-button');
@@ -147,13 +162,14 @@
 
             noBtn.style.left = Math.floor(Math.random() * maxX) + 'px';
             noBtn.style.top = Math.floor(Math.random() * maxY) + 'px';
-            scaleFactor += 0.45;
-            yesBtn.style.transform = `scale(${scaleFactor})`;
-            if(scaleFactor > 4.5) noBtn.style.display = 'none';
+            
+            const currentScale = parseFloat(yesBtn.style.transform.replace('scale(', '')) || 1;
+            yesBtn.style.transform = `scale(${currentScale + 0.45})`;
+            if(currentScale > 4) noBtn.style.display = 'none';
         }
 
         function celebrate() {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ff4d6d', '#ffffff'] });
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             showPage('page4');
         }
 
