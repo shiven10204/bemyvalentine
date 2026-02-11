@@ -18,7 +18,6 @@
         #no-button { transition: all 0.2s ease; z-index: 100; position: absolute; }
         #yes-button { transition: all 0.3s ease; z-index: 50; }
         select, input { background: #fff0f3 !important; border: 3px solid #ffd1dc !important; border-radius: 15px !important; padding: 10px !important; color: #ff4d6d !important; font-weight: bold; width: 100%; outline: none; font-size: 14px; margin-bottom: 10px; }
-        .helper-btn { font-size: 10px; background: #ffebf0; color: #ff4d6d; padding: 4px 10px; border-radius: 10px; font-weight: bold; display: inline-block; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -50,9 +49,9 @@
 
         <div id="page1" class="page">
             <div class="text-6xl mb-6 animate-bounce">💌</div>
-            <h1 class="text-3xl font-bold mb-4 text-[#ff4d6d]">Hii <span class="val-her"></span>!</h1>
+            <h1 class="text-3xl font-bold mb-4 text-[#ff4d6d]">Hi <span class="val-her"></span>!</h1>
             <p class="text-[#ff85a1] mb-10 text-lg font-medium">You have a surprise from <span class="val-me"></span>...</p>
-            <button onclick="startExperience()" class="px-12 py-4 bg-[#ffd1dc] text-[#ff4d6d] rounded-full font-bold shadow-md active:scale-95 transition-transform">Open Message 🍬</button>
+            <button onclick="startExperience()" class="px-12 py-4 bg-[#ffd1dc] text-[#ff4d6d] rounded-full font-bold shadow-md">Open Message 🍬</button>
         </div>
 
         <div id="page2" class="page">
@@ -87,31 +86,33 @@
         };
 
         function showPage(id) {
+            console.log("Switching to page:", id);
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const target = document.getElementById(id);
             if (target) target.classList.add('active');
         }
 
+        // FIXED: This function now prioritizes UI over Audio
         function startExperience() {
-            // INNOVATION: Show the next page FIRST so the user isn't stuck if music fails
+            // 1. Change the page IMMEDIATELY (no delay)
             showPage('page2');
 
-            const params = new URLSearchParams(window.location.search);
-            const musicType = params.get('music');
-            const player = document.getElementById('music-player');
+            // 2. Try playing music in a separate "thread" so it doesn't block the UI
+            setTimeout(() => {
+                const params = new URLSearchParams(window.location.search);
+                const musicType = params.get('music');
+                const player = document.getElementById('music-player');
 
-            if (musicType && musicType !== "none") {
-                try {
-                    const musicSrc = musicLibrary[musicType] || decodeURIComponent(musicType);
-                    player.src = musicSrc;
-                    // Play returns a promise, we MUST catch potential errors
-                    player.play().catch(e => {
-                        console.warn("Autoplay was blocked by the browser, but that's okay! Site continues.");
-                    });
-                } catch (err) {
-                    console.error("Music source error:", err);
+                if (musicType && musicType !== "none" && player) {
+                    try {
+                        const musicSrc = musicLibrary[musicType] || decodeURIComponent(musicType);
+                        player.src = musicSrc;
+                        player.play().catch(e => console.warn("Music blocked by browser policy, user must interact again."));
+                    } catch (err) {
+                        console.error("Audio path error:", err);
+                    }
                 }
-            }
+            }, 50); // Small 50ms delay gives the UI time to animate first
         }
 
         window.onload = () => {
@@ -173,6 +174,7 @@
             document.getElementById('custom-music-box').style.display = (this.value === 'custom') ? 'block' : 'none';
         });
 
+        // Add bubbles
         for(let i=0; i<12; i++) {
             let b = document.createElement('div'); b.className = 'bubble';
             b.style.width = Math.random() * 50 + 20 + 'px'; b.style.height = b.style.width;
