@@ -10,14 +10,13 @@
     <style>
         body { font-family: 'Fredoka', sans-serif; background: #fff5f7; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .cute-card { background: rgba(255, 255, 255, 0.9); border: 8px solid #ffd1dc; border-radius: 50px; box-shadow: 0 20px 0 #ffb7c5; }
-        .page { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; width: 100%; padding: 25px; overflow-y: auto; }
+        .page { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; width: 100%; padding: 25px; }
         .active { display: flex; animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
         @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .bubble { position: absolute; background: white; border-radius: 50%; opacity: 0.6; pointer-events: none; animation: floatUp 10s infinite ease-in; }
         @keyframes floatUp { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
         #no-button { transition: all 0.2s ease; z-index: 100; position: absolute; }
         #yes-button { transition: all 0.3s ease; z-index: 50; }
-        
         select, input { background: #fff0f3 !important; border: 3px solid #ffd1dc !important; border-radius: 15px !important; padding: 10px !important; color: #ff4d6d !important; font-weight: bold; width: 100%; outline: none; font-size: 14px; margin-bottom: 10px; }
         .helper-btn { font-size: 10px; background: #ffebf0; color: #ff4d6d; padding: 4px 10px; border-radius: 10px; font-weight: bold; display: inline-block; margin-bottom: 15px; }
     </style>
@@ -30,31 +29,28 @@
         
         <div id="page0" class="page">
             <h1 class="text-2xl font-bold mb-4 text-[#ff4d6d]">Valentine Site Maker 🍭</h1>
-            
             <div class="w-full space-y-2 max-w-xs text-left">
                 <input type="text" id="my-name" placeholder="Your Name">
                 <input type="text" id="crush-name" placeholder="Crush Name">
                 
-                <label class="text-[10px] text-[#ff85a1] uppercase font-bold ml-2">Choose a Vibe (Music)</label>
+                <label class="text-[10px] text-[#ff85a1] uppercase font-bold ml-2">Music (Optional)</label>
                 <select id="music-preset">
                     <option value="none">No Music</option>
-                    <option value="romantic">Romantic Piano (Classic)</option>
-                    <option value="chill">Chill Lofi (Modern)</option>
-                    <option value="cute">Cute Kawaii (Upbeat)</option>
+                    <option value="romantic">Romantic Piano 🎹</option>
+                    <option value="chill">Chill Lofi ☕</option>
+                    <option value="cute">Cute Kawaii ✨</option>
                     <option value="custom">-- Paste My Own Link --</option>
                 </select>
-                
                 <div id="custom-music-box" class="hidden">
                     <input type="text" id="music-url" placeholder="Paste .mp3 link here...">
                 </div>
 
-                <label class="text-[10px] text-[#ff85a1] uppercase font-bold ml-2">Photo Link</label>
-                <input type="text" id="img-url" placeholder="Paste Photo Link here...">
+                <label class="text-[10px] text-[#ff85a1] uppercase font-bold ml-2">Photo Link (Optional)</label>
+                <input type="text" id="img-url" placeholder="Paste link or leave empty for ❤️">
                 <a href="https://postimages.org/" target="_blank" class="helper-btn">Upload Photo & Get Link 📸</a>
             </div>
-
             <button onclick="generateLink()" class="mt-4 bg-[#ff4d6d] text-white w-full max-w-xs py-4 rounded-3xl font-bold shadow-lg active:scale-95 transition-all">Copy Shareable Link 🔗</button>
-            <p id="link-status" class="mt-2 text-xs text-green-500 font-bold opacity-0 transition-opacity">Link Copied! ✅</p>
+            <p id="link-status" class="mt-2 text-xs text-green-500 font-bold opacity-0 transition-opacity text-center">Link Copied! ✅</p>
         </div>
 
         <div id="page1" class="page">
@@ -65,7 +61,8 @@
         </div>
 
         <div id="page2" class="page">
-            <div id="img-display" class="w-60 h-60 rounded-[40px] border-8 border-[#ffd1dc] overflow-hidden mb-8 shadow-inner"></div>
+            <div id="img-display" class="w-60 h-60 rounded-[40px] border-8 border-[#ffd1dc] overflow-hidden mb-8 shadow-inner flex items-center justify-center">
+                </div>
             <h2 class="text-3xl font-bold text-[#ff4d6d] mb-4 italic">Thinking of you...</h2>
             <button onclick="nextPage('page3')" class="mt-6 bg-[#ff4d6d] text-white px-8 py-3 rounded-full font-bold">Next ☁️</button>
         </div>
@@ -79,7 +76,7 @@
         </div>
 
         <div id="page4" class="page">
-            <div class="text-8xl mb-6">🍓</div>
+            <div class="text-8xl mb-6 animate-pulse">🍓</div>
             <h1 class="text-5xl font-black mb-2 text-[#ff4d6d]">YAYY!!</h1>
             <p class="text-xl text-[#ff85a1] font-bold italic">It's a date! ✨</p>
         </div>
@@ -89,17 +86,14 @@
     <audio id="music-player" loop></audio>
 
     <script>
-        // Preset Music Library (Using direct public CDN links)
         const musicLibrary = {
-            romantic: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", // Replace with more romantic direct links
+            romantic: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
             chill: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
             cute: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
         };
 
-        // Show/Hide custom music input
         document.getElementById('music-preset').addEventListener('change', function() {
-            const customBox = document.getElementById('custom-music-box');
-            customBox.style.display = (this.value === 'custom') ? 'block' : 'none';
+            document.getElementById('custom-music-box').style.display = (this.value === 'custom') ? 'block' : 'none';
         });
 
         window.onload = () => {
@@ -107,8 +101,14 @@
             if (params.has('to')) {
                 document.querySelectorAll('.val-me').forEach(e => e.innerText = params.get('from'));
                 document.querySelectorAll('.val-her').forEach(e => e.innerText = params.get('to'));
-                if(params.get('img')) {
-                    document.getElementById('img-display').innerHTML = `<img src="${params.get('img')}" class="w-full h-full object-cover">`;
+                
+                // OPTIONAL PHOTO LOGIC
+                const imgUrl = params.get('img');
+                const display = document.getElementById('img-display');
+                if (imgUrl && imgUrl.trim() !== "" && imgUrl !== "null" && imgUrl !== "undefined") {
+                    display.innerHTML = `<img src="${decodeURIComponent(imgUrl)}" class="w-full h-full object-cover">`;
+                } else {
+                    display.innerHTML = `<div class="w-full h-full bg-[#fff0f3] flex items-center justify-center text-8xl animate-pulse">❤️</div>`;
                 }
                 showPage('page1');
             } else {
@@ -120,11 +120,8 @@
             const me = encodeURIComponent(document.getElementById('my-name').value || "Me");
             const her = encodeURIComponent(document.getElementById('crush-name').value || "You");
             const img = encodeURIComponent(document.getElementById('img-url').value);
-            
             let music = document.getElementById('music-preset').value;
-            if (music === 'custom') {
-                music = encodeURIComponent(document.getElementById('music-url').value);
-            }
+            if (music === 'custom') music = encodeURIComponent(document.getElementById('music-url').value);
             
             const baseUrl = window.location.origin + window.location.pathname;
             const finalLink = `${baseUrl}?from=${me}&to=${her}&img=${img}&music=${music}`;
@@ -139,11 +136,9 @@
             const params = new URLSearchParams(window.location.search);
             const musicType = params.get('music');
             const player = document.getElementById('music-player');
-
             if (musicType && musicType !== "none") {
-                // If it's a preset, use the library. Otherwise, use the custom link.
                 player.src = musicLibrary[musicType] || decodeURIComponent(musicType);
-                player.play().catch(e => console.log("Autoplay prevented. User interaction required."));
+                player.play().catch(e => console.log("Audio play blocked"));
             }
             showPage('page2');
         }
@@ -169,18 +164,14 @@
         }
 
         function celebrate() {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ff4d6d', '#ffffff'] });
             showPage('page4');
         }
 
-        // Bubbles background
         for(let i=0; i<12; i++) {
-            let b = document.createElement('div');
-            b.className = 'bubble';
-            b.style.width = Math.random() * 50 + 20 + 'px';
-            b.style.height = b.style.width;
-            b.style.left = Math.random() * 100 + 'vw';
-            b.style.animationDelay = Math.random() * 5 + 's';
+            let b = document.createElement('div'); b.className = 'bubble';
+            b.style.width = Math.random() * 50 + 20 + 'px'; b.style.height = b.style.width;
+            b.style.left = Math.random() * 100 + 'vw'; b.style.animationDelay = Math.random() * 5 + 's';
             document.getElementById('bubbles-container').appendChild(b);
         }
     </script>
