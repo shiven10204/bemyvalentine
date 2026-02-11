@@ -7,147 +7,140 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Fredoka:wght@300;500;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Fredoka', sans-serif; background: #fff5f7; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="%23ff4d6d"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'), auto; }
-        .cute-card { background: rgba(255, 255, 255, 0.95); border: 8px solid #ffd1dc; border-radius: 50px; box-shadow: 0 20px 0 #ffb7c5; position: relative; z-index: 10; }
+    <style id="theme-styles">
+        /* Default Cute Theme Styles */
+        :root { --bg: #fff5f7; --card-bg: rgba(255, 255, 255, 0.95); --border: #ffd1dc; --shadow: #ffb7c5; --primary: #ff4d6d; --secondary: #ff85a1; }
+        
+        body { font-family: 'Fredoka', sans-serif; background: var(--bg); height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: center; transition: all 0.5s ease; }
+        .cute-card { background: var(--card-bg); border: 8px solid var(--border); border-radius: 50px; box-shadow: 0 20px 0 var(--shadow); transition: all 0.5s ease; }
         .page { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; height: 100%; width: 100%; padding: 30px; }
         .active { display: flex; animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+        
         @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .bubble { position: absolute; background: white; border-radius: 50%; opacity: 0.6; pointer-events: none; animation: floatUp 10s infinite ease-in; z-index: 1; }
         @keyframes floatUp { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 100% { transform: translateY(-10vh) scale(1.5); opacity: 0; } }
+        
         #no-button { transition: all 0.2s ease; z-index: 100; position: absolute; }
-        #yes-button { transition: all 0.3s ease; z-index: 50; }
-        select, input { background: #fff0f3 !important; border: 3px solid #ffd1dc !important; border-radius: 15px !important; padding: 10px !important; color: #ff4d6d !important; font-weight: bold; width: 100%; outline: none; }
+        select, input { background: rgba(255, 255, 255, 0.5) !important; border: 2px solid var(--border) !important; border-radius: 15px !important; padding: 10px !important; color: var(--primary) !important; font-weight: bold; width: 100%; outline: none; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
     <div id="bubbles-container"></div>
 
-    <div class="cute-card w-[95%] max-w-lg h-[650px] relative overflow-hidden flex flex-col items-center justify-center">
+    <div id="main-card" class="cute-card w-[95%] max-w-lg h-[650px] relative overflow-hidden flex flex-col items-center justify-center">
         
         <div id="page0" class="page">
-            <h1 class="text-2xl font-bold mb-4 text-[#ff4d6d]">Valentine Maker Pro 🍭</h1>
-            <div class="w-full space-y-2 max-w-xs text-left">
+            <h1 class="text-2xl font-bold mb-4 text-[var(--primary)]">Valentine Maker Pro 🍭</h1>
+            <div class="w-full space-y-1 max-w-xs text-left overflow-y-auto pr-2" style="max-height: 400px;">
+                <label class="text-[10px] uppercase font-bold text-[var(--secondary)] ml-2">Names</label>
                 <input type="text" id="my-name" placeholder="Your Name">
                 <input type="text" id="crush-name" placeholder="Her Name">
-                <label class="text-[10px] text-[#ff85a1] uppercase font-bold ml-2">Music</label>
+                
+                <label class="text-[10px] uppercase font-bold text-[var(--secondary)] ml-2">Choose Vibe (Theme)</label>
+                <select id="theme-choice">
+                    <option value="cute">Cute & Bubbly (Pink)</option>
+                    <option value="dark">Elegant Night (Dark)</option>
+                    <option value="sky">Dreamy Clouds (Blue)</option>
+                </select>
+
+                <label class="text-[10px] uppercase font-bold text-[var(--secondary)] ml-2">Music</label>
                 <select id="music-preset">
                     <option value="none">No Music</option>
                     <option value="romantic">Romantic Piano 🎹</option>
                     <option value="chill">Chill Lofi ☕</option>
                     <option value="cute">Cute Kawaii ✨</option>
                 </select>
-                <label class="text-[10px] text-[#ff85a1] uppercase font-bold ml-2">Photo Link (Optional)</label>
+
+                <label class="text-[10px] uppercase font-bold text-[var(--secondary)] ml-2">Photo URL (Optional)</label>
                 <input type="text" id="img-url" placeholder="Paste link or leave empty">
             </div>
-            <button onclick="playSfx('pop'); generateLink()" class="mt-6 bg-[#ff4d6d] text-white w-full max-w-xs py-4 rounded-3xl font-bold shadow-lg">Copy Magic Link 🔗</button>
+            <button onclick="playSfx('pop'); generateLink()" class="mt-6 bg-[var(--primary)] text-white w-full max-w-xs py-4 rounded-3xl font-bold shadow-lg active:scale-95 transition-all">Copy Magic Link 🔗</button>
             <p id="link-status" class="mt-2 text-xs text-green-500 font-bold opacity-0 transition-opacity">Link Copied! ✅</p>
         </div>
 
         <div id="page1" class="page">
             <div class="text-7xl mb-6">🎁</div>
-            <h1 class="text-3xl font-bold mb-4 text-[#ff4d6d]">Hii <span class="val-her"></span>!</h1>
-            <p class="text-[#ff85a1] mb-10 text-lg font-medium">I made a little journey for you...</p>
-            <button onclick="playSfx('pop'); startExperience()" class="px-12 py-4 bg-[#ffd1dc] text-[#ff4d6d] rounded-full font-bold shadow-md">Start the Journey ✨</button>
+            <h1 class="text-3xl font-bold mb-4 text-[var(--primary)]">Hii <span class="val-her"></span>!</h1>
+            <p class="text-[var(--secondary)] mb-10 text-lg font-medium">I made a little journey for you...</p>
+            <button onclick="playSfx('pop'); startExperience()" class="px-12 py-4 bg-[var(--border)] text-[var(--primary)] rounded-full font-bold shadow-md">Start ✨</button>
         </div>
 
         <div id="page2" class="page">
-            <div id="img-display" class="w-60 h-60 rounded-[40px] border-8 border-[#ffd1dc] overflow-hidden mb-8 shadow-inner flex items-center justify-center"></div>
-            <h2 class="text-2xl font-bold text-[#ff4d6d] mb-4 italic">"Thinking of you..."</h2>
-            <button onclick="playSfx('pop'); showPage('page3')" class="mt-4 bg-[#ffd1dc] text-[#ff4d6d] px-8 py-3 rounded-full font-bold">And also... ☁️</button>
+            <div id="img-display" class="w-60 h-60 rounded-[40px] border-8 border-[var(--border)] overflow-hidden mb-8 shadow-inner flex items-center justify-center"></div>
+            <h2 class="text-2xl font-bold text-[var(--primary)] mb-4 italic">"Thinking of you..."</h2>
+            <button onclick="playSfx('pop'); showPage('page3')" class="mt-4 text-[var(--primary)] font-bold border-b-2 border-[var(--primary)]">Continue ☁️</button>
         </div>
 
         <div id="page3" class="page">
             <div class="text-6xl mb-6">💭</div>
-            <h1 class="text-2xl font-bold text-[#ff4d6d] mb-6">Did you know?</h1>
-            <p class="text-[#ff85a1] leading-relaxed mb-8 px-4 text-lg">
-                The world gets a little brighter, the coffee tastes a little better, and my smile gets a little wider... <b>whenever you're around.</b>
+            <p class="text-[var(--secondary)] leading-relaxed mb-8 px-4 text-lg">
+                The world gets a little brighter whenever you're around.
             </p>
-            <button onclick="playSfx('pop'); showPage('page4')" class="bg-[#ffccd5] text-[#ff4d6d] px-10 py-3 rounded-full font-bold">One more thing 🍭</button>
+            <button onclick="playSfx('pop'); showPage('page4')" class="bg-[var(--border)] text-[var(--primary)] px-10 py-3 rounded-full font-bold">One more thing 🍭</button>
         </div>
 
         <div id="page4" class="page">
-            <div class="flex gap-4 mb-8">
-                <span class="text-5xl animate-bounce">🌈</span>
-                <span class="text-5xl animate-bounce" style="animation-delay: 0.2s">⭐</span>
-                <span class="text-5xl animate-bounce" style="animation-delay: 0.4s">🍬</span>
+            <h1 class="text-2xl font-bold text-[var(--primary)] mb-6">Will you be my Valentine? 🧸</h1>
+            <div id="button-area" class="relative w-full h-40 flex items-center justify-center">
+                <button id="yes-button" onclick="playSfx('tada'); celebrate()" class="bg-[var(--primary)] text-white px-14 py-6 rounded-full text-3xl font-black shadow-xl">YES! 💖</button>
+                <button id="no-button" onmouseover="playSfx('whoosh'); teleport()" class="bg-white text-[var(--secondary)] px-6 py-2 rounded-full text-sm border-2 border-[var(--border)] font-bold">No 🥺</button>
             </div>
-            <h1 class="text-2xl font-bold text-[#ff4d6d] mb-6">You're one in a billion!</h1>
-            <p class="text-[#ff85a1] mb-10">I couldn't imagine this Valentine's Day without asking you this...</p>
-            <button onclick="playSfx('sparkle'); showPage('page5')" class="bg-[#ff4d6d] text-white px-12 py-4 rounded-full font-bold shadow-xl">The Big Question ❓</button>
         </div>
 
         <div id="page5" class="page">
-            <h1 id="question" class="text-3xl font-bold mb-16 text-[#ff4d6d]">Will you be my Valentine? 🧸</h1>
-            <div id="button-area" class="relative w-full h-40 flex items-center justify-center">
-                <button id="yes-button" onclick="playSfx('tada'); celebrate()" class="bg-[#ff4d6d] text-white px-14 py-6 rounded-full text-3xl font-black shadow-[0_10px_0_#c9184a]">YES! 💖</button>
-                <button id="no-button" onmouseover="playSfx('whoosh'); teleport()" class="bg-white text-[#ffb7c5] px-6 py-2 rounded-full text-sm border-2 border-[#ffd1dc] font-bold">No 🥺</button>
-            </div>
+            <div class="text-8xl mb-6">🍓</div>
+            <h1 class="text-5xl font-black mb-2 text-[var(--primary)]">YAYY!!</h1>
+            <p class="text-xl text-[var(--secondary)] font-bold italic">See you soon! ✨</p>
         </div>
-
-        <div id="page4" class="page" id="success-page">
-            <div class="text-8xl mb-6 animate-pulse">🍓</div>
-            <h1 class="text-5xl font-black mb-2 text-[#ff4d6d]">YAYY!!</h1>
-            <p class="text-xl text-[#ff85a1] font-bold italic">You just made me the happiest person! ✨</p>
-        </div>
-
     </div>
 
     <audio id="music-player" loop></audio>
 
     <script>
-        // Sound Effect URLs
+        const themes = {
+            cute: { bg: "#fff5f7", cardBg: "rgba(255, 255, 255, 0.95)", border: "#ffd1dc", shadow: "#ffb7c5", primary: "#ff4d6d", secondary: "#ff85a1" },
+            dark: { bg: "#0f172a", cardBg: "rgba(30, 41, 59, 0.8)", border: "#334155", shadow: "#000000", primary: "#fbbf24", secondary: "#94a3b8" },
+            sky: { bg: "#f0f9ff", cardBg: "rgba(255, 255, 255, 0.9)", border: "#bae6fd", shadow: "#7dd3fc", primary: "#0284c7", secondary: "#7dd3fc" }
+        };
+
         const sfx = {
             pop: "https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3",
             whoosh: "https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3",
-            sparkle: "https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3",
             tada: "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"
         };
 
-        const musicLibrary = {
-            romantic: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-            chill: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-            cute: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
-        };
+        function applyTheme(themeName) {
+            const t = themes[themeName] || themes.cute;
+            const root = document.documentElement;
+            root.style.setProperty('--bg', t.bg);
+            root.style.setProperty('--card-bg', t.cardBg);
+            root.style.setProperty('--border', t.border);
+            root.style.setProperty('--shadow', t.shadow);
+            root.style.setProperty('--primary', t.primary);
+            root.style.setProperty('--secondary', t.secondary);
+        }
 
         function playSfx(type) {
-            const audio = new Audio(sfx[type]);
-            audio.volume = 0.5;
-            audio.play().catch(() => {}); // Catch browser block
+            new Audio(sfx[type]).play().catch(() => {});
         }
 
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            const target = document.getElementById(id);
-            if (target) target.classList.add('active');
-            if(id === 'page4') { // If success (oops page4 used twice in html IDs, fixed below)
-                 if(id === 'success-page') { /* success logic here */ }
-            }
-        }
-
-        function startExperience() {
-            showPage('page2');
-            const params = new URLSearchParams(window.location.search);
-            const musicType = params.get('music');
-            const player = document.getElementById('music-player');
-            if (musicType && musicType !== "none") {
-                player.src = musicLibrary[musicType] || decodeURIComponent(musicType);
-                player.play().catch(e => console.log("Music blocked"));
-            }
+            document.getElementById(id).classList.add('active');
         }
 
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             if (params.has('to')) {
-                document.querySelectorAll('.val-me').forEach(e => e.innerText = params.get('from'));
+                applyTheme(params.get('theme'));
                 document.querySelectorAll('.val-her').forEach(e => e.innerText = params.get('to'));
                 const imgUrl = params.get('img');
                 const display = document.getElementById('img-display');
                 if (imgUrl && imgUrl.trim() !== "" && imgUrl !== "null") {
                     display.innerHTML = `<img src="${decodeURIComponent(imgUrl)}" class="w-full h-full object-cover">`;
                 } else {
-                    display.innerHTML = `<div class="w-full h-full bg-[#fff0f3] flex items-center justify-center text-8xl animate-pulse">❤️</div>`;
+                    display.innerHTML = `<div class="w-full h-full bg-[var(--bg)] flex items-center justify-center text-8xl">❤️</div>`;
                 }
                 showPage('page1');
             } else {
@@ -159,41 +152,46 @@
             const me = encodeURIComponent(document.getElementById('my-name').value || "Me");
             const her = encodeURIComponent(document.getElementById('crush-name').value || "You");
             const img = encodeURIComponent(document.getElementById('img-url').value);
+            const theme = document.getElementById('theme-choice').value;
             const music = document.getElementById('music-preset').value;
             const baseUrl = window.location.origin + window.location.pathname;
-            const finalLink = `${baseUrl}?from=${me}&to=${her}&img=${img}&music=${music}`;
+            const finalLink = `${baseUrl}?from=${me}&to=${her}&img=${img}&theme=${theme}&music=${music}`;
             navigator.clipboard.writeText(finalLink);
-            const status = document.getElementById('link-status');
-            status.style.opacity = "1";
-            setTimeout(() => status.style.opacity = "0", 3000);
+            document.getElementById('link-status').style.opacity = "1";
         }
 
-        let scaleFactor = 1;
+        function startExperience() {
+            showPage('page2');
+            const params = new URLSearchParams(window.location.search);
+            const musicType = params.get('music');
+            if (musicType && musicType !== "none") {
+                const player = document.getElementById('music-player');
+                player.src = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"; // Placeholder
+                player.play().catch(() => {});
+            }
+        }
+
+        let scale = 1;
         function teleport() {
-            const noBtn = document.getElementById('no-button');
-            const yesBtn = document.getElementById('yes-button');
+            const btn = document.getElementById('no-button');
             const area = document.getElementById('button-area');
-            const maxX = area.clientWidth - noBtn.clientWidth;
-            const maxY = area.clientHeight - noBtn.clientHeight;
-            noBtn.style.left = Math.floor(Math.random() * maxX) + 'px';
-            noBtn.style.top = Math.floor(Math.random() * maxY) + 'px';
-            scaleFactor += 0.5;
-            yesBtn.style.transform = `scale(${scaleFactor})`;
-            if(scaleFactor > 4.5) noBtn.style.display = 'none';
+            btn.style.left = Math.random() * (area.clientWidth - btn.clientWidth) + 'px';
+            btn.style.top = Math.random() * (area.clientHeight - btn.clientHeight) + 'px';
+            scale += 0.4;
+            document.getElementById('yes-button').style.transform = `scale(${scale})`;
+            if(scale > 4.5) btn.style.display = 'none';
         }
 
         function celebrate() {
-            confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
-            // Fix success page ID conflict
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelector('#page4:last-of-type').classList.add('active');
+            confetti({ particleCount: 200, spread: 80 });
+            showPage('page5');
         }
 
-        // Bubbles
         for(let i=0; i<12; i++) {
             let b = document.createElement('div'); b.className = 'bubble';
-            b.style.width = Math.random() * 50 + 20 + 'px'; b.style.height = b.style.width;
-            b.style.left = Math.random() * 100 + 'vw'; b.style.animationDelay = Math.random() * 5 + 's';
+            b.style.width = Math.random() * 50 + 20 + 'px';
+            b.style.left = Math.random() * 100 + 'vw';
+            b.style.animationDelay = Math.random() * 5 + 's';
             document.getElementById('bubbles-container').appendChild(b);
         }
     </script>
