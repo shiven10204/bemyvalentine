@@ -43,7 +43,6 @@
                 <div id="custom-music-box" class="hidden"><input type="text" id="music-url" placeholder="Paste .mp3 link here..."></div>
                 <label class="text-[10px] text-[#ff85a1] uppercase font-bold ml-2">Photo Link (Optional)</label>
                 <input type="text" id="img-url" placeholder="Paste link or leave empty for ❤️">
-                <a href="https://postimages.org/" target="_blank" class="helper-btn">Upload Photo & Get Link 📸</a>
             </div>
             <button onclick="generateLink()" class="mt-4 bg-[#ff4d6d] text-white w-full max-w-xs py-4 rounded-3xl font-bold shadow-lg">Copy Shareable Link 🔗</button>
             <p id="link-status" class="mt-2 text-xs text-green-500 font-bold opacity-0 transition-opacity">Link Copied! ✅</p>
@@ -53,13 +52,13 @@
             <div class="text-6xl mb-6 animate-bounce">💌</div>
             <h1 class="text-3xl font-bold mb-4 text-[#ff4d6d]">Hii <span class="val-her"></span>!</h1>
             <p class="text-[#ff85a1] mb-10 text-lg font-medium">You have a surprise from <span class="val-me"></span>...</p>
-            <button onclick="startExperience()" class="px-12 py-4 bg-[#ffd1dc] text-[#ff4d6d] rounded-full font-bold shadow-md">Open Message 🍬</button>
+            <button onclick="startExperience()" class="px-12 py-4 bg-[#ffd1dc] text-[#ff4d6d] rounded-full font-bold shadow-md active:scale-95 transition-transform">Open Message 🍬</button>
         </div>
 
         <div id="page2" class="page">
             <div id="img-display" class="w-60 h-60 rounded-[40px] border-8 border-[#ffd1dc] overflow-hidden mb-8 shadow-inner flex items-center justify-center"></div>
             <h2 class="text-3xl font-bold text-[#ff4d6d] mb-4 italic">Thinking of you...</h2>
-            <button onclick="showPage('page3')" class="mt-6 bg-[#ff4d6d] text-white px-10 py-3 rounded-full font-bold shadow-lg active:scale-95 transition-transform">Next Step ☁️</button>
+            <button onclick="showPage('page3')" class="mt-6 bg-[#ff4d6d] text-white px-10 py-3 rounded-full font-bold shadow-lg">Next Step ☁️</button>
         </div>
 
         <div id="page3" class="page">
@@ -78,7 +77,7 @@
 
     </div>
 
-    <audio id="music-player" loop></audio>
+    <audio id="music-player" loop preload="auto"></audio>
 
     <script>
         const musicLibrary = {
@@ -87,7 +86,34 @@
             cute: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
         };
 
-        // Initialize Page
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(id);
+            if (target) target.classList.add('active');
+        }
+
+        function startExperience() {
+            // INNOVATION: Show the next page FIRST so the user isn't stuck if music fails
+            showPage('page2');
+
+            const params = new URLSearchParams(window.location.search);
+            const musicType = params.get('music');
+            const player = document.getElementById('music-player');
+
+            if (musicType && musicType !== "none") {
+                try {
+                    const musicSrc = musicLibrary[musicType] || decodeURIComponent(musicType);
+                    player.src = musicSrc;
+                    // Play returns a promise, we MUST catch potential errors
+                    player.play().catch(e => {
+                        console.warn("Autoplay was blocked by the browser, but that's okay! Site continues.");
+                    });
+                } catch (err) {
+                    console.error("Music source error:", err);
+                }
+            }
+        }
+
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             if (params.has('to')) {
@@ -106,23 +132,6 @@
                 showPage('page0');
             }
         };
-
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            const target = document.getElementById(id);
-            if (target) target.classList.add('active');
-        }
-
-        function startExperience() {
-            const params = new URLSearchParams(window.location.search);
-            const musicType = params.get('music');
-            const player = document.getElementById('music-player');
-            if (musicType && musicType !== "none") {
-                player.src = musicLibrary[musicType] || decodeURIComponent(musicType);
-                player.play().catch(e => console.log("Audio block"));
-            }
-            showPage('page2'); // Moves to the Thinking of You page
-        }
 
         function generateLink() {
             const me = encodeURIComponent(document.getElementById('my-name').value || "Me");
