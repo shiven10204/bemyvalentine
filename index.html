@@ -32,7 +32,6 @@
             <div class="w-full space-y-2 max-w-xs text-left">
                 <input type="text" id="my-name" placeholder="Your Name">
                 <input type="text" id="crush-name" placeholder="Crush Name">
-                
                 <label class="text-[10px] text-[#ff85a1] uppercase font-bold ml-2">Music (Optional)</label>
                 <select id="music-preset">
                     <option value="none">No Music</option>
@@ -41,16 +40,13 @@
                     <option value="cute">Cute Kawaii ✨</option>
                     <option value="custom">-- Paste My Own Link --</option>
                 </select>
-                <div id="custom-music-box" class="hidden">
-                    <input type="text" id="music-url" placeholder="Paste .mp3 link here...">
-                </div>
-
+                <div id="custom-music-box" class="hidden"><input type="text" id="music-url" placeholder="Paste .mp3 link here..."></div>
                 <label class="text-[10px] text-[#ff85a1] uppercase font-bold ml-2">Photo Link (Optional)</label>
                 <input type="text" id="img-url" placeholder="Paste link or leave empty for ❤️">
                 <a href="https://postimages.org/" target="_blank" class="helper-btn">Upload Photo & Get Link 📸</a>
             </div>
-            <button onclick="generateLink()" class="mt-4 bg-[#ff4d6d] text-white w-full max-w-xs py-4 rounded-3xl font-bold shadow-lg active:scale-95 transition-all">Copy Shareable Link 🔗</button>
-            <p id="link-status" class="mt-2 text-xs text-green-500 font-bold opacity-0 transition-opacity text-center">Link Copied! ✅</p>
+            <button onclick="generateLink()" class="mt-4 bg-[#ff4d6d] text-white w-full max-w-xs py-4 rounded-3xl font-bold shadow-lg">Copy Shareable Link 🔗</button>
+            <p id="link-status" class="mt-2 text-xs text-green-500 font-bold opacity-0 transition-opacity">Link Copied! ✅</p>
         </div>
 
         <div id="page1" class="page">
@@ -61,10 +57,9 @@
         </div>
 
         <div id="page2" class="page">
-            <div id="img-display" class="w-60 h-60 rounded-[40px] border-8 border-[#ffd1dc] overflow-hidden mb-8 shadow-inner flex items-center justify-center">
-                </div>
+            <div id="img-display" class="w-60 h-60 rounded-[40px] border-8 border-[#ffd1dc] overflow-hidden mb-8 shadow-inner flex items-center justify-center"></div>
             <h2 class="text-3xl font-bold text-[#ff4d6d] mb-4 italic">Thinking of you...</h2>
-            <button onclick="nextPage('page3')" class="mt-6 bg-[#ff4d6d] text-white px-8 py-3 rounded-full font-bold">Next ☁️</button>
+            <button onclick="showPage('page3')" class="mt-6 bg-[#ff4d6d] text-white px-10 py-3 rounded-full font-bold shadow-lg active:scale-95 transition-transform">Next Step ☁️</button>
         </div>
 
         <div id="page3" class="page">
@@ -92,17 +87,13 @@
             cute: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
         };
 
-        document.getElementById('music-preset').addEventListener('change', function() {
-            document.getElementById('custom-music-box').style.display = (this.value === 'custom') ? 'block' : 'none';
-        });
-
+        // Initialize Page
         window.onload = () => {
             const params = new URLSearchParams(window.location.search);
             if (params.has('to')) {
                 document.querySelectorAll('.val-me').forEach(e => e.innerText = params.get('from'));
                 document.querySelectorAll('.val-her').forEach(e => e.innerText = params.get('to'));
                 
-                // OPTIONAL PHOTO LOGIC
                 const imgUrl = params.get('img');
                 const display = document.getElementById('img-display');
                 if (imgUrl && imgUrl.trim() !== "" && imgUrl !== "null" && imgUrl !== "undefined") {
@@ -115,6 +106,23 @@
                 showPage('page0');
             }
         };
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(id);
+            if (target) target.classList.add('active');
+        }
+
+        function startExperience() {
+            const params = new URLSearchParams(window.location.search);
+            const musicType = params.get('music');
+            const player = document.getElementById('music-player');
+            if (musicType && musicType !== "none") {
+                player.src = musicLibrary[musicType] || decodeURIComponent(musicType);
+                player.play().catch(e => console.log("Audio block"));
+            }
+            showPage('page2'); // Moves to the Thinking of You page
+        }
 
         function generateLink() {
             const me = encodeURIComponent(document.getElementById('my-name').value || "Me");
@@ -130,22 +138,6 @@
             const status = document.getElementById('link-status');
             status.style.opacity = "1";
             setTimeout(() => status.style.opacity = "0", 3000);
-        }
-
-        function startExperience() {
-            const params = new URLSearchParams(window.location.search);
-            const musicType = params.get('music');
-            const player = document.getElementById('music-player');
-            if (musicType && musicType !== "none") {
-                player.src = musicLibrary[musicType] || decodeURIComponent(musicType);
-                player.play().catch(e => console.log("Audio play blocked"));
-            }
-            showPage('page2');
-        }
-
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
         }
 
         function teleport() {
@@ -167,6 +159,10 @@
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: ['#ff4d6d', '#ffffff'] });
             showPage('page4');
         }
+
+        document.getElementById('music-preset').addEventListener('change', function() {
+            document.getElementById('custom-music-box').style.display = (this.value === 'custom') ? 'block' : 'none';
+        });
 
         for(let i=0; i<12; i++) {
             let b = document.createElement('div'); b.className = 'bubble';
